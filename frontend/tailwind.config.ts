@@ -26,7 +26,7 @@ const config = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#6366F1", // Indigo
+          DEFAULT: "#6366F1", 
           foreground: "hsl(var(--primary-foreground))",
           50: "#EEF2FF",
           100: "#E0E7FF",
@@ -35,7 +35,7 @@ const config = {
           700: "#4338CA",
         },
         secondary: {
-          DEFAULT: "#10B981", // Emerald
+          DEFAULT: "#10B981", 
           foreground: "hsl(var(--secondary-foreground))",
           50: "#ECFDF5",
           100: "#D1FAE5",
@@ -44,7 +44,7 @@ const config = {
           700: "#047857",
         },
         accent: {
-          DEFAULT: "#F59E0B", // Amber
+          DEFAULT: "#F59E0B", 
           foreground: "hsl(var(--accent-foreground))",
           50: "#FFFBEB",
           100: "#FEF3C7",
@@ -68,7 +68,7 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        surface: "#1F2937", // Custom surface color
+        surface: "#1F2937", 
         slate: {
           800: "#1E293B",
           900: "#0F172A",

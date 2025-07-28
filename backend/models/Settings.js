@@ -55,7 +55,6 @@ const settingsSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Ensure only one settings document exists
 settingsSchema.statics.getInstance = async function() {
   let settings = await this.findOne({ isActive: true });
   if (!settings) {
@@ -66,13 +65,12 @@ settingsSchema.statics.getInstance = async function() {
   return settings;
 };
 
-// Update system stats
 settingsSchema.methods.updateStats = async function() {
   const User = mongoose.model('User');
   const Performance = mongoose.model('Performance');
   const SalaryHistory = mongoose.model('SalaryHistory');
   
-  const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM format
+  const currentMonth = new Date().toISOString().slice(0, 7); 
   
   const [totalEmployees, totalPerformanceRecords, totalSalariesGenerated] = await Promise.all([
     User.countDocuments({ role: 'employee', isActive: true }),

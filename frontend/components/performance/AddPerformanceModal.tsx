@@ -62,7 +62,6 @@ export function AddPerformanceModal({ open, onOpenChange, onSuccess }: AddPerfor
         description: "Performance record created successfully",
       })
       
-      // Reset form
       setFormData({
         taskName: "",
         score: "",

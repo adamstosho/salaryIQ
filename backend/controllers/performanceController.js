@@ -1,9 +1,6 @@
 const Performance = require('../models/Performance');
 const User = require('../models/User');
 
-// @desc    Get all performance records (admin) or user's own records (employee)
-// @route   GET /api/performance
-// @access  Private
 const getPerformanceRecords = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -12,12 +9,10 @@ const getPerformanceRecords = async (req, res) => {
 
     let query = {};
     
-    // If employee, only show their own records
     if (req.user.role === 'employee') {
       query.employeeId = req.user.id;
     }
 
-    // Add date filter if provided
     if (req.query.startDate && req.query.endDate) {
       query.date = {
         $gte: new Date(req.query.startDate),
@@ -54,9 +49,6 @@ const getPerformanceRecords = async (req, res) => {
   }
 };
 
-// @desc    Get single performance record
-// @route   GET /api/performance/:id
-// @access  Private
 const getPerformanceRecord = async (req, res) => {
   try {
     const record = await Performance.findById(req.params.id)
@@ -68,7 +60,6 @@ const getPerformanceRecord = async (req, res) => {
       });
     }
 
-    // Check if user can access this record
     if (req.user.role === 'employee' && record.employeeId._id.toString() !== req.user.id) {
       return res.status(403).json({
         message: 'Not authorized to access this record'
@@ -88,19 +79,14 @@ const getPerformanceRecord = async (req, res) => {
   }
 };
 
-// @desc    Create performance record
-// @route   POST /api/performance
-// @access  Private
 const createPerformanceRecord = async (req, res) => {
   try {
     const { taskName, score, difficulty, clientFeedback, date, notes } = req.body;
 
-    // Set employeeId based on user role
     const employeeId = req.user.role === 'admin' && req.body.employeeId 
       ? req.body.employeeId 
       : req.user.id;
 
-    // Verify employee exists if admin is creating for someone else
     if (req.user.role === 'admin' && req.body.employeeId) {
       const employee = await User.findById(req.body.employeeId);
       if (!employee || employee.role !== 'employee') {
@@ -137,9 +123,7 @@ const createPerformanceRecord = async (req, res) => {
   }
 };
 
-// @desc    Update performance record
-// @route   PUT /api/performance/:id
-// @access  Private
+
 const updatePerformanceRecord = async (req, res) => {
   try {
     const record = await Performance.findById(req.params.id);
@@ -150,7 +134,6 @@ const updatePerformanceRecord = async (req, res) => {
       });
     }
 
-    // Check if user can update this record
     if (req.user.role === 'employee' && record.employeeId.toString() !== req.user.id) {
       return res.status(403).json({
         message: 'Not authorized to update this record'
@@ -177,9 +160,6 @@ const updatePerformanceRecord = async (req, res) => {
   }
 };
 
-// @desc    Delete performance record
-// @route   DELETE /api/performance/:id
-// @access  Private
 const deletePerformanceRecord = async (req, res) => {
   try {
     const record = await Performance.findById(req.params.id);
@@ -190,7 +170,6 @@ const deletePerformanceRecord = async (req, res) => {
       });
     }
 
-    // Check if user can delete this record
     if (req.user.role === 'employee' && record.employeeId.toString() !== req.user.id) {
       return res.status(403).json({
         message: 'Not authorized to delete this record'
@@ -212,9 +191,6 @@ const deletePerformanceRecord = async (req, res) => {
   }
 };
 
-// @desc    Approve performance record (admin only)
-// @route   PUT /api/performance/:id/approve
-// @access  Private/Admin
 const approvePerformanceRecord = async (req, res) => {
   try {
     const record = await Performance.findById(req.params.id);
@@ -225,7 +201,6 @@ const approvePerformanceRecord = async (req, res) => {
       });
     }
 
-    // Update the record to approved
     const updatedRecord = await Performance.findByIdAndUpdate(
       req.params.id,
       { isApproved: true },
@@ -246,19 +221,14 @@ const approvePerformanceRecord = async (req, res) => {
   }
 };
 
-// @desc    Get performance statistics
-// @route   GET /api/performance/stats
-// @access  Private
 const getPerformanceStats = async (req, res) => {
   try {
     let matchQuery = {};
     
-    // If employee, only show their stats
     if (req.user.role === 'employee') {
       matchQuery.employeeId = req.user.id;
     }
 
-    // Add date filter if provided
     if (req.query.startDate && req.query.endDate) {
       matchQuery.date = {
         $gte: new Date(req.query.startDate),

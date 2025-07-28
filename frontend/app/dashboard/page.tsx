@@ -27,7 +27,6 @@ export default function DashboardPage() {
     try {
       setLoading(true)
 
-      // Load different data based on user role
       if (isAdmin) {
         const [systemStats, userStats, performanceStats, salaryStats] = await Promise.all([
           apiClient.getSystemStats(),
@@ -44,7 +43,6 @@ export default function DashboardPage() {
           totalSalaryAmount: salaryStats.data.overall.totalAmount,
         })
       } else {
-        // Employee dashboard data
         const [performanceRecords, salaryHistory] = await Promise.all([
           apiClient.getPerformanceRecords({ limit: 5 }),
           apiClient.getMySalaryHistory(1, 5),

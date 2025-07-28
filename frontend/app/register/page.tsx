@@ -33,7 +33,6 @@ export default function RegisterPage() {
         baseSalary: parseFloat(formData.baseSalary)
       })
     } catch (error) {
-      // Error is handled in the AuthContext
     } finally {
       setLoading(false)
     }

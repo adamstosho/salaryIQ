@@ -3,17 +3,13 @@ const Performance = require('../models/Performance');
 const User = require('../models/User');
 const Settings = require('../models/Settings');
 
-// @desc    Calculate salary for all employees (admin only)
-// @route   POST /api/salary/calculate
-// @access  Private/Admin
+
 const calculateSalary = async (req, res) => {
   try {
     const { period } = req.body;
     
-    // Use provided period or current month
     const targetPeriod = period || new Date().toISOString().slice(0, 7);
     
-    // Check if salary already calculated for this period
     const existingSalary = await SalaryHistory.findOne({ period: targetPeriod });
     if (existingSalary) {
       return res.status(400).json({
@@ -21,14 +17,11 @@ const calculateSalary = async (req, res) => {
       });
     }
 
-    // Get settings
     const settings = await Settings.getInstance();
     const multiplier = settings.salaryMultiplier;
 
-    // Get all active employees
     const employees = await User.find({ role: 'employee', isActive: true });
 
-    // Calculate start and end dates for the period
     const [year, month] = targetPeriod.split('-');
     const startDate = new Date(parseInt(year), parseInt(month) - 1, 1);
     const endDate = new Date(parseInt(year), parseInt(month), 0, 23, 59, 59);
@@ -36,7 +29,6 @@ const calculateSalary = async (req, res) => {
     const salaryResults = [];
 
     for (const employee of employees) {
-      // Get performance records for the period
       const performanceRecords = await Performance.find({
         employeeId: employee._id,
         date: { $gte: startDate, $lte: endDate },
@@ -45,7 +37,6 @@ const calculateSalary = async (req, res) => {
 
       console.log(`Employee ${employee.name}: Found ${performanceRecords.length} approved performance records`);
 
-      // Calculate total score
       const totalScore = performanceRecords.reduce((sum, record) => {
         const weightedScore = record.score * record.difficultyMultiplier;
         console.log(`Record: ${record.taskName}, Score: ${record.score}, Difficulty: ${record.difficulty}, Multiplier: ${record.difficultyMultiplier}, Weighted: ${weightedScore}`);
@@ -54,20 +45,17 @@ const calculateSalary = async (req, res) => {
 
       console.log(`Employee ${employee.name}: Total weighted score: ${totalScore}`);
 
-      // Calculate salary
       const performanceBonus = totalScore * multiplier;
       const calculatedSalary = employee.baseSalary + performanceBonus;
 
       console.log(`Employee ${employee.name}: Base salary: ${employee.baseSalary}, Bonus: ${performanceBonus}, Total: ${calculatedSalary}`);
 
-      // Create salary breakdown
       const breakdown = {
         baseSalary: employee.baseSalary,
         performanceBonus: performanceBonus,
         totalSalary: calculatedSalary
       };
 
-      // Create salary history record
       const salaryHistory = await SalaryHistory.create({
         employeeId: employee._id,
         period: targetPeriod,
@@ -95,7 +83,6 @@ const calculateSalary = async (req, res) => {
       });
     }
 
-    // Update settings
     settings.lastSalaryCalculation = new Date();
     await settings.save();
 
@@ -118,9 +105,7 @@ const calculateSalary = async (req, res) => {
   }
 };
 
-// @desc    Get user's salary history
-// @route   GET /api/salary/me
-// @access  Private
+
 const getMySalaryHistory = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -156,9 +141,7 @@ const getMySalaryHistory = async (req, res) => {
   }
 };
 
-// @desc    Get all salary history (admin only)
-// @route   GET /api/salary/all
-// @access  Private/Admin
+
 const getAllSalaryHistory = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -167,12 +150,10 @@ const getAllSalaryHistory = async (req, res) => {
 
     let query = {};
     
-    // Add period filter if provided
     if (req.query.period) {
       query.period = req.query.period;
     }
 
-    // Add employee filter if provided
     if (req.query.employeeId) {
       query.employeeId = req.query.employeeId;
     }
@@ -206,9 +187,7 @@ const getAllSalaryHistory = async (req, res) => {
   }
 };
 
-// @desc    Get salary statistics
-// @route   GET /api/salary/stats
-// @access  Private/Admin
+
 const getSalaryStats = async (req, res) => {
   try {
     const currentMonth = new Date().toISOString().slice(0, 7);
@@ -303,16 +282,12 @@ const getSalaryStats = async (req, res) => {
   }
 };
 
-// @desc    Get salary breakdown for specific period
-// @route   GET /api/salary/breakdown/:period
-// @access  Private
 const getSalaryBreakdown = async (req, res) => {
   try {
     const { period } = req.params;
     
     let query = { period };
     
-    // If employee, only show their own breakdown
     if (req.user.role === 'employee') {
       query.employeeId = req.user.id;
     }
@@ -343,14 +318,11 @@ const getSalaryBreakdown = async (req, res) => {
   }
 };
 
-// @desc    Update salary status (admin only)
-// @route   PUT /api/salary/:id/status
-// @access  Private/Admin
+
 const updateSalaryStatus = async (req, res) => {
   try {
     const { status } = req.body;
     
-    // Validate status
     if (!['pending', 'approved', 'paid'].includes(status)) {
       return res.status(400).json({
         message: 'Status must be pending, approved, or paid'
@@ -365,7 +337,6 @@ const updateSalaryStatus = async (req, res) => {
       });
     }
 
-    // Update status
     salaryRecord.status = status;
     await salaryRecord.save();
 
@@ -386,14 +357,10 @@ const updateSalaryStatus = async (req, res) => {
   }
 };
 
-// @desc    Bulk update salary status (admin only)
-// @route   PUT /api/salary/bulk-status
-// @access  Private/Admin
 const bulkUpdateSalaryStatus = async (req, res) => {
   try {
     const { salaryIds, status } = req.body;
     
-    // Validate status
     if (!['pending', 'approved', 'paid'].includes(status)) {
       return res.status(400).json({
         message: 'Status must be pending, approved, or paid'
@@ -406,7 +373,6 @@ const bulkUpdateSalaryStatus = async (req, res) => {
       });
     }
 
-    // Update all salary records
     const result = await SalaryHistory.updateMany(
       { _id: { $in: salaryIds } },
       { status }
@@ -429,9 +395,6 @@ const bulkUpdateSalaryStatus = async (req, res) => {
   }
 };
 
-// @desc    Approve performance records for salary calculation (admin only)
-// @route   PUT /api/salary/approve-performance
-// @access  Private/Admin
 const approvePerformanceForSalary = async (req, res) => {
   try {
     const { performanceIds, period } = req.body;
@@ -448,12 +411,10 @@ const approvePerformanceForSalary = async (req, res) => {
       });
     }
 
-    // Calculate start and end dates for the period
     const [year, month] = period.split('-');
     const startDate = new Date(parseInt(year), parseInt(month) - 1, 1);
     const endDate = new Date(parseInt(year), parseInt(month), 0, 23, 59, 59);
 
-    // Update performance records to approved
     const result = await Performance.updateMany(
       { 
         _id: { $in: performanceIds },
@@ -479,9 +440,6 @@ const approvePerformanceForSalary = async (req, res) => {
   }
 };
 
-// @desc    Get pending performance records for approval (admin only)
-// @route   GET /api/salary/pending-performance
-// @access  Private/Admin
 const getPendingPerformanceRecords = async (req, res) => {
   try {
     const { period } = req.query;
@@ -492,7 +450,6 @@ const getPendingPerformanceRecords = async (req, res) => {
       });
     }
 
-    // Calculate start and end dates for the period
     const [year, month] = period.split('-');
     const startDate = new Date(parseInt(year), parseInt(month) - 1, 1);
     const endDate = new Date(parseInt(year), parseInt(month), 0, 23, 59, 59);

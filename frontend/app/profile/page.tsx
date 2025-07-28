@@ -57,7 +57,6 @@ export default function ProfilePage() {
       })
       
       setIsEditing(false)
-      // Refresh user data
       window.location.reload()
     } catch (error) {
       toast({

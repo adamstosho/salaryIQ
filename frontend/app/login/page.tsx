@@ -25,7 +25,6 @@ export default function LoginPage() {
     try {
       await login(email, password)
     } catch (error) {
-      // Error is handled in the AuthContext
     } finally {
       setLoading(false)
     }

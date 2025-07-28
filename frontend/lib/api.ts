@@ -49,7 +49,6 @@ class ApiClient {
     return response.json()
   }
 
-  // Auth endpoints
   async login(email: string, password: string) {
     return this.request("/auth/login", {
       method: "POST",
@@ -72,7 +71,6 @@ class ApiClient {
     return this.request("/auth/logout", { method: "POST" })
   }
 
-  // Users endpoints
   async getUsers(page = 1, limit = 10) {
     return this.request(`/users?page=${page}&limit=${limit}`)
   }
@@ -96,7 +94,6 @@ class ApiClient {
     return this.request("/users/stats")
   }
 
-  // Performance endpoints
   async getPerformanceRecords(params: any = {}) {
     const queryString = new URLSearchParams(params).toString()
     return this.request(`/performance?${queryString}`)
@@ -131,7 +128,6 @@ class ApiClient {
     return this.request(`/performance/stats?${queryString}`)
   }
 
-  // Salary endpoints
   async calculateSalary(period?: string) {
     return this.request("/salary/calculate", {
       method: "POST",
@@ -181,7 +177,6 @@ class ApiClient {
     return this.request(`/salary/pending-performance?period=${period}`)
   }
 
-  // Settings endpoints
   async getSettings() {
     return this.request("/settings")
   }
@@ -216,7 +211,6 @@ class ApiClient {
     })
   }
 
-  // Health check
   async healthCheck() {
     return this.request("/health")
   }

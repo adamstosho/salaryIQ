@@ -1,6 +1,5 @@
 const { body, param, query, validationResult } = require('express-validator');
 
-// Handle validation errors
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -16,7 +15,6 @@ const handleValidationErrors = (req, res, next) => {
   next();
 };
 
-// User validation rules
 const validateUserRegistration = [
   body('name')
     .trim()
@@ -81,7 +79,6 @@ const validateUserUpdate = [
   handleValidationErrors
 ];
 
-// Performance validation rules
 const validatePerformanceCreate = [
   body('taskName')
     .trim()
@@ -137,7 +134,6 @@ const validatePerformanceUpdate = [
   handleValidationErrors
 ];
 
-// Salary validation rules
 const validateSalaryCalculation = [
   body('period')
     .optional()
@@ -186,7 +182,6 @@ const validatePeriodQuery = [
   handleValidationErrors
 ];
 
-// Settings validation rules
 const validateSettingsUpdate = [
   body('salaryMultiplier')
     .isFloat({ min: 0 })
@@ -194,7 +189,6 @@ const validateSettingsUpdate = [
   handleValidationErrors
 ];
 
-// ID validation
 const validateObjectId = [
   param('id')
     .isMongoId()
@@ -202,7 +196,6 @@ const validateObjectId = [
   handleValidationErrors
 ];
 
-// Query validation
 const validatePagination = [
   query('page')
     .optional()

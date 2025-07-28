@@ -1,13 +1,9 @@
 const User = require('../models/User');
 
-// @desc    Register user
-// @route   POST /api/auth/register
-// @access  Public
 const register = async (req, res) => {
   try {
     const { name, email, password, role, baseSalary, department } = req.body;
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
@@ -15,7 +11,6 @@ const register = async (req, res) => {
       });
     }
 
-    // Create user
     const user = await User.create({
       name,
       email,
@@ -25,7 +20,6 @@ const register = async (req, res) => {
       department
     });
 
-    // Generate token
     const token = user.generateAuthToken();
 
     res.status(201).json({
@@ -55,14 +49,11 @@ const register = async (req, res) => {
   }
 };
 
-// @desc    Login user
-// @route   POST /api/auth/login
-// @access  Public
+
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check if user exists and include password for comparison
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
       return res.status(401).json({
@@ -70,14 +61,12 @@ const login = async (req, res) => {
       });
     }
 
-    // Check if user is active
     if (!user.isActive) {
       return res.status(401).json({
         message: 'Account is deactivated'
       });
     }
 
-    // Check password
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
       return res.status(401).json({
@@ -85,7 +74,6 @@ const login = async (req, res) => {
       });
     }
 
-    // Generate token
     const token = user.generateAuthToken();
 
     res.json({
@@ -115,9 +103,7 @@ const login = async (req, res) => {
   }
 };
 
-// @desc    Get current user
-// @route   GET /api/auth/me
-// @access  Private
+
 const getCurrentUser = async (req, res) => {
   try {
     const user = await User.findById(req.user.id)
@@ -149,14 +135,10 @@ const getCurrentUser = async (req, res) => {
   }
 };
 
-// @desc    Logout user (client-side token removal)
-// @route   POST /api/auth/logout
-// @access  Private
+
 const logout = async (req, res) => {
   try {
-    // In a JWT-based system, logout is typically handled client-side
-    // by removing the token. However, we can implement a blacklist
-    // or other server-side logout mechanisms if needed.
+    
     
     res.json({
       success: true,
@@ -171,9 +153,7 @@ const logout = async (req, res) => {
   }
 };
 
-// @desc    Refresh token (optional - for token refresh functionality)
-// @route   POST /api/auth/refresh
-// @access  Private
+
 const refreshToken = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);

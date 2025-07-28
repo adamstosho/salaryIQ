@@ -48,21 +48,18 @@ const userSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Virtual for performance records
 userSchema.virtual('performanceRecords', {
   ref: 'Performance',
   localField: '_id',
   foreignField: 'employeeId'
 });
 
-// Virtual for salary history
 userSchema.virtual('salaryHistory', {
   ref: 'SalaryHistory',
   localField: '_id',
   foreignField: 'employeeId'
 });
 
-// Hash password before saving
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
   
@@ -75,12 +72,10 @@ userSchema.pre('save', async function(next) {
   }
 });
 
-// Compare password method
 userSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// Generate JWT token method
 userSchema.methods.generateAuthToken = function() {
   const jwt = require('jsonwebtoken');
   return jwt.sign(
@@ -90,7 +85,6 @@ userSchema.methods.generateAuthToken = function() {
   );
 };
 
-// Remove sensitive data when converting to JSON
 userSchema.methods.toJSON = function() {
   const userObject = this.toObject();
   delete userObject.password;

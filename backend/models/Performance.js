@@ -48,11 +48,9 @@ const performanceSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Index for efficient queries
 performanceSchema.index({ employeeId: 1, date: -1 });
 performanceSchema.index({ date: -1 });
 
-// Virtual for difficulty multiplier
 performanceSchema.virtual('difficultyMultiplier').get(function() {
   const multipliers = {
     easy: 1.0,
@@ -62,12 +60,10 @@ performanceSchema.virtual('difficultyMultiplier').get(function() {
   return multipliers[this.difficulty] || 1.0;
 });
 
-// Virtual for weighted score
 performanceSchema.virtual('weightedScore').get(function() {
   return this.score * this.difficultyMultiplier;
 });
 
-// Pre-save middleware to ensure employee exists
 performanceSchema.pre('save', async function(next) {
   if (this.isNew) {
     const User = mongoose.model('User');

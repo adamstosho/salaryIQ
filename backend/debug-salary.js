@@ -7,11 +7,9 @@ const SalaryHistory = require('./models/SalaryHistory');
 
 async function debugSalaryCalculation() {
   try {
-    // Connect to database
     await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/performance-salary');
     console.log('Connected to database');
 
-    // Find the user
     const user = await User.findOne({ email: 'uthmanabdullahi2020@gmail.com' });
     if (!user) {
       console.log('❌ User not found');
@@ -20,7 +18,6 @@ async function debugSalaryCalculation() {
     console.log(`✅ Found user: ${user.name} (${user.email})`);
     console.log(`Base salary: $${user.baseSalary}`);
 
-    // Get all performance records for this user
     const allRecords = await Performance.find({ employeeId: user._id }).populate('employeeId', 'name email');
     console.log(`\n📊 Total performance records: ${allRecords.length}`);
 
@@ -29,7 +26,6 @@ async function debugSalaryCalculation() {
       return;
     }
 
-    // Show all records
     allRecords.forEach((record, index) => {
       console.log(`\nRecord ${index + 1}:`);
       console.log(`  Task: ${record.taskName}`);
@@ -40,7 +36,6 @@ async function debugSalaryCalculation() {
       console.log(`  Weighted Score: ${record.score * record.difficultyMultiplier}`);
     });
 
-    // Check current month records
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
@@ -67,7 +62,6 @@ async function debugSalaryCalculation() {
       return;
     }
 
-    // Calculate what the salary should be
     const totalScore = approvedRecords.reduce((sum, record) => {
       const weightedScore = record.score * record.difficultyMultiplier;
       console.log(`  ${record.taskName}: ${record.score} × ${record.difficultyMultiplier} = ${weightedScore}`);
@@ -76,7 +70,6 @@ async function debugSalaryCalculation() {
 
     console.log(`\n📈 Total weighted score: ${totalScore}`);
 
-    // Get settings for multiplier
     const Settings = require('./models/Settings');
     const settings = await Settings.getInstance();
     const multiplier = settings.salaryMultiplier;
@@ -91,7 +84,6 @@ async function debugSalaryCalculation() {
     console.log(`  Performance bonus: $${performanceBonus}`);
     console.log(`  Total salary: $${calculatedSalary}`);
 
-    // Check if salary already calculated
     const period = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
     const existingSalary = await SalaryHistory.findOne({
       employeeId: user._id,

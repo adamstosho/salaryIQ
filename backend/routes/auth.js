@@ -16,11 +16,9 @@ const {
 
 const { protect } = require('../middleware/auth');
 
-// Public routes
 router.post('/register', validateUserRegistration, register);
 router.post('/login', validateUserLogin, login);
 
-// Protected routes
 router.get('/me', protect, getCurrentUser);
 router.post('/logout', protect, logout);
 router.post('/refresh', protect, refreshToken);

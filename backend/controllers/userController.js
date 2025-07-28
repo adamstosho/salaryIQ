@@ -1,8 +1,6 @@
 const User = require('../models/User');
 
-// @desc    Get all users (admin only)
-// @route   GET /api/users
-// @access  Private/Admin
+
 const getAllUsers = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -40,9 +38,6 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-// @desc    Get single user
-// @route   GET /api/users/:id
-// @access  Private
 const getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id)
@@ -56,7 +51,6 @@ const getUser = async (req, res) => {
       });
     }
 
-    // Check if user is active
     if (!user.isActive) {
       return res.status(404).json({
         message: 'User not found'
@@ -76,14 +70,11 @@ const getUser = async (req, res) => {
   }
 };
 
-// @desc    Update user
-// @route   PUT /api/users/:id
-// @access  Private
+
 const updateUser = async (req, res) => {
   try {
     const { name, email, role, baseSalary, department } = req.body;
 
-    // Check if user exists
     const user = await User.findById(req.params.id);
     if (!user) {
       return res.status(404).json({
@@ -91,7 +82,6 @@ const updateUser = async (req, res) => {
       });
     }
 
-    // Check if email is being changed and if it already exists
     if (email && email !== user.email) {
       const existingUser = await User.findOne({ email });
       if (existingUser) {
@@ -101,7 +91,6 @@ const updateUser = async (req, res) => {
       }
     }
 
-    // Update user
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       {
@@ -128,9 +117,6 @@ const updateUser = async (req, res) => {
   }
 };
 
-// @desc    Delete user (soft delete)
-// @route   DELETE /api/users/:id
-// @access  Private/Admin
 const deleteUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -141,7 +127,6 @@ const deleteUser = async (req, res) => {
       });
     }
 
-    // Soft delete - set isActive to false
     user.isActive = false;
     await user.save();
 
@@ -158,9 +143,7 @@ const deleteUser = async (req, res) => {
   }
 };
 
-// @desc    Get user statistics
-// @route   GET /api/users/stats
-// @access  Private/Admin
+
 const getUserStats = async (req, res) => {
   try {
     const stats = await User.aggregate([

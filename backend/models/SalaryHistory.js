@@ -9,7 +9,6 @@ const salaryHistorySchema = new mongoose.Schema({
   period: {
     type: String,
     required: [true, 'Period is required'],
-    // Format: "YYYY-MM" (e.g., "2025-07")
     match: [/^\d{4}-\d{2}$/, 'Period must be in YYYY-MM format']
   },
   totalScore: {
@@ -69,12 +68,10 @@ const salaryHistorySchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Compound index for efficient queries
 salaryHistorySchema.index({ employeeId: 1, period: 1 }, { unique: true });
 salaryHistorySchema.index({ period: 1 });
 salaryHistorySchema.index({ calculatedAt: -1 });
 
-// Virtual for period display
 salaryHistorySchema.virtual('periodDisplay').get(function() {
   const [year, month] = this.period.split('-');
   const monthNames = [
@@ -84,7 +81,6 @@ salaryHistorySchema.virtual('periodDisplay').get(function() {
   return `${monthNames[parseInt(month) - 1]} ${year}`;
 });
 
-// Pre-save middleware to ensure employee exists
 salaryHistorySchema.pre('save', async function(next) {
   if (this.isNew) {
     const User = mongoose.model('User');

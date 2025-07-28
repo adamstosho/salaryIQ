@@ -24,7 +24,6 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [systemHealth, setSystemHealth] = useState<any>(null)
   
-  // Automation settings
   const [automationSettings, setAutomationSettings] = useState<any>(null)
   const [automatedSalaryCalculation, setAutomatedSalaryCalculation] = useState(false)
   const [salaryCalculationDay, setSalaryCalculationDay] = useState("1")

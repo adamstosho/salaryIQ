@@ -3,9 +3,7 @@ const User = require('../models/User');
 const Performance = require('../models/Performance');
 const SalaryHistory = require('../models/SalaryHistory');
 
-// @desc    Get current settings
-// @route   GET /api/settings
-// @access  Private/Admin
+
 const getSettings = async (req, res) => {
   try {
     const settings = await Settings.getInstance();
@@ -23,9 +21,7 @@ const getSettings = async (req, res) => {
   }
 };
 
-// @desc    Update settings
-// @route   PUT /api/settings
-// @access  Private/Admin
+
 const updateSettings = async (req, res) => {
   try {
     const { salaryMultiplier } = req.body;
@@ -52,17 +48,13 @@ const updateSettings = async (req, res) => {
   }
 };
 
-// @desc    Get system statistics
-// @route   GET /api/settings/stats
-// @access  Private/Admin
+
 const getSystemStats = async (req, res) => {
   try {
     const settings = await Settings.getInstance();
     
-    // Update stats
     await settings.updateStats();
     
-    // Get additional stats
     const currentMonth = new Date().toISOString().slice(0, 7);
     
     const [totalUsers, totalPerformanceRecords, totalSalariesGenerated, recentPerformance] = await Promise.all([
@@ -138,9 +130,7 @@ const getSystemStats = async (req, res) => {
   }
 };
 
-// @desc    Reset settings to defaults
-// @route   POST /api/settings/reset
-// @access  Private/Admin
+
 const resetSettings = async (req, res) => {
   try {
     const defaultMultiplier = process.env.DEFAULT_SALARY_MULTIPLIER || 100;
@@ -165,9 +155,6 @@ const resetSettings = async (req, res) => {
   }
 };
 
-// @desc    Get system health status
-// @route   GET /api/settings/health
-// @access  Private/Admin
 const getSystemHealth = async (req, res) => {
   try {
     const health = {
@@ -176,7 +163,6 @@ const getSystemHealth = async (req, res) => {
       checks: {}
     };
     
-    // Check database connection
     try {
       await User.findOne();
       health.checks.database = 'connected';
@@ -185,7 +171,6 @@ const getSystemHealth = async (req, res) => {
       health.status = 'unhealthy';
     }
     
-    // Check settings
     try {
       const settings = await Settings.getInstance();
       health.checks.settings = 'available';
@@ -198,7 +183,6 @@ const getSystemHealth = async (req, res) => {
       health.status = 'unhealthy';
     }
     
-    // Check collections
     try {
       const [userCount, performanceCount, salaryCount] = await Promise.all([
         User.countDocuments(),
@@ -233,9 +217,6 @@ const getSystemHealth = async (req, res) => {
   }
 };
 
-// @desc    Get automation settings
-// @route   GET /api/settings/automation
-// @access  Private/Admin
 const getAutomationSettings = async (req, res) => {
   try {
     const settings = await Settings.getInstance();
@@ -258,9 +239,6 @@ const getAutomationSettings = async (req, res) => {
   }
 };
 
-// @desc    Update automation settings
-// @route   PUT /api/settings/automation
-// @access  Private/Admin
 const updateAutomationSettings = async (req, res) => {
   try {
     const { automatedSalaryCalculation, salaryCalculationDay } = req.body;
@@ -280,12 +258,10 @@ const updateAutomationSettings = async (req, res) => {
       settings.salaryCalculationDay = salaryCalculationDay;
     }
     
-    // Calculate next scheduled calculation
     if (automatedSalaryCalculation) {
       const now = new Date();
       const nextCalculation = new Date(now.getFullYear(), now.getMonth(), salaryCalculationDay);
       
-      // If this month's calculation day has passed, schedule for next month
       if (nextCalculation <= now) {
         nextCalculation.setMonth(nextCalculation.getMonth() + 1);
       }

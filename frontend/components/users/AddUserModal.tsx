@@ -59,7 +59,6 @@ export function AddUserModal({ open, onOpenChange, onSuccess }: AddUserModalProp
         description: "User created successfully",
       })
       
-      // Reset form
       setFormData({
         name: "",
         email: "",

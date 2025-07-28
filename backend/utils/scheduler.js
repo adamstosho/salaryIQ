@@ -7,7 +7,6 @@ class SalaryScheduler {
     this.checkInterval = null;
   }
 
-  // Start the scheduler
   start() {
     if (this.isRunning) {
       console.log('Salary scheduler is already running');
@@ -17,16 +16,13 @@ class SalaryScheduler {
     this.isRunning = true;
     console.log('Starting salary scheduler...');
 
-    // Check every hour for scheduled calculations
     this.checkInterval = setInterval(async () => {
       await this.checkForScheduledCalculation();
-    }, 60 * 60 * 1000); // 1 hour
+    }, 60 * 60 * 1000); 
 
-    // Also check immediately on startup
     this.checkForScheduledCalculation();
   }
 
-  // Stop the scheduler
   stop() {
     if (this.checkInterval) {
       clearInterval(this.checkInterval);
@@ -36,7 +32,6 @@ class SalaryScheduler {
     console.log('Salary scheduler stopped');
   }
 
-  // Check if it's time for a scheduled salary calculation
   async checkForScheduledCalculation() {
     try {
       const settings = await Settings.getInstance();
@@ -49,9 +44,7 @@ class SalaryScheduler {
       const today = now.getDate();
       const currentHour = now.getHours();
 
-      // Check if today is the calculation day and it's morning (9 AM)
       if (today === settings.salaryCalculationDay && currentHour === 9) {
-        // Check if we already calculated for this month
         const currentMonth = now.toISOString().slice(0, 7);
         const lastCalculation = settings.lastAutomatedCalculation;
         
@@ -65,10 +58,8 @@ class SalaryScheduler {
 
         console.log(`Starting automated salary calculation for ${currentMonth}`);
         
-        // Perform the calculation
         await this.performAutomatedCalculation(currentMonth);
         
-        // Update settings
         settings.lastAutomatedCalculation = now;
         settings.nextScheduledCalculation = this.calculateNextScheduledDate(settings.salaryCalculationDay);
         await settings.save();
@@ -80,10 +71,8 @@ class SalaryScheduler {
     }
   }
 
-  // Perform the actual salary calculation
   async performAutomatedCalculation(period) {
     try {
-      // Create a mock request and response for the calculateSalary function
       const mockReq = {
         body: { period },
         user: { id: 'system', role: 'admin' }
@@ -107,12 +96,10 @@ class SalaryScheduler {
     }
   }
 
-  // Calculate the next scheduled calculation date
   calculateNextScheduledDate(calculationDay) {
     const now = new Date();
     const nextCalculation = new Date(now.getFullYear(), now.getMonth(), calculationDay);
     
-    // If this month's calculation day has passed, schedule for next month
     if (nextCalculation <= now) {
       nextCalculation.setMonth(nextCalculation.getMonth() + 1);
     }
@@ -120,7 +107,6 @@ class SalaryScheduler {
     return nextCalculation;
   }
 
-  // Get scheduler status
   getStatus() {
     return {
       isRunning: this.isRunning,
@@ -129,7 +115,6 @@ class SalaryScheduler {
   }
 }
 
-// Create singleton instance
 const salaryScheduler = new SalaryScheduler();
 
 module.exports = salaryScheduler; 
