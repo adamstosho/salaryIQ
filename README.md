@@ -11,11 +11,11 @@
 - [Contributing](#contributing)
 - [License](#license)
 
-## 🎯 Introduction
+##  Introduction
 
 SalaryIQ is a modern, intelligent salary management system designed for Nigerian businesses. It automates salary calculations based on employee performance metrics, providing a fair and transparent compensation system. The platform helps organizations track employee performance, calculate performance-based bonuses, and manage salary distributions efficiently.
 
-## 🚨 Problem Statement
+##  Problem Statement
 
 Traditional salary management systems often lack:
 - **Performance-based compensation**: Most systems don't link salary to actual performance metrics
@@ -26,9 +26,9 @@ Traditional salary management systems often lack:
 
 SalaryIQ solves these problems by providing a data-driven, automated, and transparent salary management solution.
 
-## ✨ Features
+##  Features
 
-### 🏢 **Admin Features**
+###  **Admin Features**
 - **User Management**: Create, edit, and manage employee accounts
 - **Performance Tracking**: Monitor and approve employee performance records
 - **Salary Calculation**: Automated salary computation based on performance
@@ -36,26 +36,26 @@ SalaryIQ solves these problems by providing a data-driven, automated, and transp
 - **Analytics Dashboard**: Comprehensive system statistics and insights
 - **Bulk Operations**: Approve multiple performance records at once
 
-### 👤 **Employee Features**
+###  **Employee Features**
 - **Performance Recording**: Add and track your task performance
 - **Salary History**: View your salary breakdown and history
 - **Performance Analytics**: See your performance trends and scores
 - **Profile Management**: Update personal information and view employment details
 
-### 💰 **Salary Management**
+###  **Salary Management**
 - **Performance-Based Calculation**: Salaries calculated using weighted performance scores
 - **Difficulty Multipliers**: Different task difficulties affect bonus calculations
 - **Real-time Updates**: Instant salary calculations when performance is approved
 - **Nigerian Naira Support**: Full localization with ₦ currency formatting
 - **Salary Breakdown**: Detailed breakdown of base salary and performance bonuses
 
-### 📊 **Analytics & Reporting**
+###  **Analytics & Reporting**
 - **Dashboard Analytics**: Real-time system performance metrics
 - **Employee Statistics**: Individual and team performance insights
 - **Salary Reports**: Comprehensive salary distribution analysis
 - **Performance Trends**: Historical performance tracking
 
-## 🛠 Technology Stack
+## Technology Stack
 
 ### Frontend
 - **React.js** - Modern UI framework
@@ -79,7 +79,7 @@ SalaryIQ solves these problems by providing a data-driven, automated, and transp
 - **Prettier** - Code formatting
 - **Git** - Version control
 
-## 🚀 Installation
+##  Installation
 
 ### Prerequisites
 - Node.js (v18 or higher)
@@ -124,15 +124,15 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api
 npm run dev
 ```
 
-## 📖 Usage Guide
+##  Usage Guide
 
-### 🔐 Login Credentials
+###  Login Credentials
 
 **Admin Access:**
 - Email: `admin@company.com`
 - Password: `admin123`
 
-### 👨‍💼 **Admin Dashboard**
+###  **Admin Dashboard**
 
 #### 1. **User Management**
 - Navigate to **Users** in the sidebar
@@ -160,7 +160,7 @@ npm run dev
 - **Automation**: Enable/disable automatic salary calculations
 - **System Health**: Monitor database and system status
 
-### 👤 **Employee Dashboard**
+###  **Employee Dashboard**
 
 #### 1. **Performance Tracking**
 - Navigate to **Performance** section
@@ -184,7 +184,7 @@ npm run dev
 - **View Details**: See your employment information
 - **Edit Profile**: Update your personal details (if allowed)
 
-### 💡 **How Salary Calculation Works**
+###  **How Salary Calculation Works**
 
 1. **Performance Recording**: Employees submit performance records for completed tasks
 2. **Difficulty Weighting**: Each task has a difficulty multiplier:
@@ -236,7 +236,7 @@ npm run dev
 - `PUT /api/settings` - Update system settings
 - `GET /api/settings/stats` - Get system statistics
 
-## 🤝 Contributing
+##  Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -244,11 +244,11 @@ npm run dev
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 📞 Support
+##  Support
 
 For support and questions:
 - Create an issue in the GitHub repository
