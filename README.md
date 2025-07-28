@@ -1,4 +1,4 @@
-# SalaryIQ - Smart Performance-Based Salary Management System
+# SalaryGen - Smart Performance-Based Salary Management System
 
 ## 📋 Table of Contents
 - [Introduction](#introduction)
@@ -13,7 +13,7 @@
 
 ##  Introduction
 
-SalaryIQ is a modern, intelligent salary management system designed for Nigerian businesses. It automates salary calculations based on employee performance metrics, providing a fair and transparent compensation system. The platform helps organizations track employee performance, calculate performance-based bonuses, and manage salary distributions efficiently.
+SalaryGen is a modern, intelligent salary management system designed for Nigerian businesses. It automates salary calculations based on employee performance metrics, providing a fair and transparent compensation system. The platform helps organizations track employee performance, calculate performance-based bonuses, and manage salary distributions efficiently.
 
 ##  Problem Statement
 
@@ -24,7 +24,7 @@ Traditional salary management systems often lack:
 - **Fairness**: Subjective salary decisions without clear metrics
 - **Localization**: Systems not adapted for Nigerian business needs and currency
 
-SalaryIQ solves these problems by providing a data-driven, automated, and transparent salary management solution.
+SalaryGen solves these problems by providing a data-driven, automated, and transparent salary management solution.
 
 ##  Features
 
@@ -206,7 +206,58 @@ npm run dev
 - Performance Bonus: ₦37,000
 - **Final Salary: ₦137,000**
 
-## 🔌 API Documentation
+# Preview of the App Interface (Screenshot)
+
+
+![screenshot](/frontend/public/screenshots/screencapture-salary-iq-five-vercel-app-landing-2025-07-28-22_36_57.png)
+Landing page
+
+![screenshot](/frontend/public/screenshots/screencapture-salary-iq-five-vercel-app-login-2025-07-28-22_38_14.png)
+
+Login page
+
+
+![screenshot](/frontend/public/screenshots/screencapture-salary-iq-five-vercel-app-register-2025-07-28-22_38_25.png)
+Registration page
+
+
+
+![screenshot](/frontend/public/screenshots/screencapture-salary-iq-five-vercel-app-dashboard-2025-07-28-22_37_24.png)
+User Dashboard
+
+![screenshot](/frontend/public/screenshots/screencapture-salary-iq-five-vercel-app-dashboard-2025-07-28-22_38_45.png)
+
+Admin Dashboard
+
+
+![screenshot](/frontend/public/screenshots/screencapture-salary-iq-five-vercel-app-landing-2025-07-28-22_36_57.png)
+Landing page
+
+![screenshot](/frontend/public/screenshots/screencapture-salary-iq-five-vercel-app-login-2025-07-28-22_38_14.png)
+
+Login page
+
+![screenshot](/frontend/public/screenshots/screencapture-salary-iq-five-vercel-app-performance-2025-07-28-22_37_50.png)
+User performance page
+
+![screenshot](/frontend/public/screenshots/screencapture-salary-iq-five-vercel-app-performance-2025-07-28-22_38_59.png)
+Admin performance for managing users
+
+![screenshot](/frontend/public/screenshots/screencapture-salary-iq-five-vercel-app-profile-2025-07-28-22_37_36.png)
+User profile page
+
+![screenshot](/frontend/public/screenshots/screencapture-salary-iq-five-vercel-app-register-2025-07-28-22_38_25.png)
+Registration page
+
+
+![screenshot](/frontend/public/screenshots/screencapture-salary-iq-five-vercel-app-salary-2025-07-28-22_37_59.png)
+
+User Salary Page
+
+![screenshot](/frontend/public/screenshots/screencapture-salary-iq-five-vercel-app-settings-2025-07-28-22_39_29.png)
+Admin Settings page
+
+## API Documentation
 
 ### Authentication Endpoints
 - `POST /api/auth/login` - User login
