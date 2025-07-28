@@ -1,0 +1,1607 @@
+openapi: 3.0.3
+info:
+  title: Performance-Based Salary Generator API
+  description: |
+    A comprehensive REST API for managing performance-based salary calculations.
+    
+    ## Features
+    - **Authentication**: JWT-based authentication with role-based access control
+    - **User Management**: Admin and employee roles with different permissions
+    - **Performance Tracking**: Record and manage employee performance metrics
+    - **Salary Calculation**: Automated salary calculation based on performance
+    - **Salary History**: Track and view salary history and breakdowns
+    - **Settings Management**: Global application settings and statistics
+    
+    ## Authentication
+    Most endpoints require authentication. Include the JWT token in the Authorization header:
+    ```
+    Authorization: Bearer <your-jwt-token>
+    ```
+    
+    ## Roles
+    - **Admin**: Full access to all endpoints and data
+    - **Employee**: Limited access to own data and performance records
+    
+    ## Base URL
+    ```
+    http://localhost:5000/api
+    ```
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@company.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:5000/api
+    description: Development server
+  - url: https://api.company.com/api
+    description: Production server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for authentication
+
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Unique user identifier
+        name:
+          type: string
+          description: User's full name
+        email:
+          type: string
+          format: email
+          description: User's email address
+        role:
+          type: string
+          enum: [admin, employee]
+          description: User's role in the system
+        baseSalary:
+          type: number
+          description: User's base salary
+        department:
+          type: string
+          description: User's department
+        isActive:
+          type: boolean
+          description: Whether the user account is active
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - name
+        - email
+        - role
+        - baseSalary
+        - department
+
+    Performance:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Unique performance record identifier
+        employeeId:
+          $ref: '#/components/schemas/User'
+        taskName:
+          type: string
+          description: Name of the task performed
+        score:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Performance score (0-100)
+        difficulty:
+          type: string
+          enum: [easy, medium, hard]
+          description: Task difficulty level
+        clientFeedback:
+          type: string
+          description: Feedback from client
+        date:
+          type: string
+          format: date-time
+          description: Date of performance
+        notes:
+          type: string
+          description: Additional notes
+        isApproved:
+          type: boolean
+          description: Whether the record is approved
+        difficultyMultiplier:
+          type: number
+          description: Calculated difficulty multiplier
+        weightedScore:
+          type: number
+          description: Calculated weighted score
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - employeeId
+        - taskName
+        - score
+        - difficulty
+
+    SalaryHistory:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Unique salary history identifier
+        employeeId:
+          $ref: '#/components/schemas/User'
+        period:
+          type: string
+          pattern: '^\d{4}-\d{2}$'
+          description: Salary period (YYYY-MM format)
+        totalScore:
+          type: number
+          description: Total weighted performance score
+        calculatedSalary:
+          type: number
+          description: Final calculated salary
+        baseSalary:
+          type: number
+          description: Employee's base salary
+        multiplier:
+          type: number
+          description: Global salary multiplier used
+        breakdown:
+          type: object
+          properties:
+            baseSalary:
+              type: number
+            performanceBonus:
+              type: number
+            totalSalary:
+              type: number
+        performanceRecords:
+          type: array
+          items:
+            type: object
+            properties:
+              recordId:
+                type: string
+              taskName:
+                type: string
+              score:
+                type: number
+              difficulty:
+                type: string
+              weightedScore:
+                type: number
+        calculatedAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [pending, approved, paid]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - employeeId
+        - period
+        - totalScore
+        - calculatedSalary
+
+    Settings:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Unique settings identifier
+        salaryMultiplier:
+          type: number
+          description: Global salary multiplier
+        lastSalaryCalculation:
+          type: string
+          format: date-time
+          nullable: true
+        systemStats:
+          type: object
+          properties:
+            totalEmployees:
+              type: number
+            totalPerformanceRecords:
+              type: number
+            totalSalariesGenerated:
+              type: number
+            lastUpdated:
+              type: string
+              format: date-time
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message
+        error:
+          type: string
+          description: Error type
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+              value:
+                type: string
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          type: object
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number
+        limit:
+          type: integer
+          description: Number of items per page
+        total:
+          type: integer
+          description: Total number of items
+        pages:
+          type: integer
+          description: Total number of pages
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      description: Check if the API is running
+      tags:
+        - System
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  message:
+                    type: string
+                    example: Performance Salary Backend is running
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /auth/register:
+    post:
+      summary: Register a new user
+      description: Create a new user account
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+                - baseSalary
+                - department
+              properties:
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                  example: John Doe
+                email:
+                  type: string
+                  format: email
+                  example: john.doe@company.com
+                password:
+                  type: string
+                  minLength: 6
+                  example: password123
+                role:
+                  type: string
+                  enum: [admin, employee]
+                  default: employee
+                  example: employee
+                baseSalary:
+                  type: number
+                  minimum: 0
+                  example: 50000
+                department:
+                  type: string
+                  minLength: 2
+                  maxLength: 50
+                  example: Engineering
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: '#/components/schemas/User'
+                          token:
+                            type: string
+                            description: JWT token
+        '400':
+          description: Validation error or user already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/login:
+    post:
+      summary: Login user
+      description: Authenticate user and return JWT token
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: john.doe@company.com
+                password:
+                  type: string
+                  example: password123
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: '#/components/schemas/User'
+                          token:
+                            type: string
+                            description: JWT token
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/me:
+    get:
+      summary: Get current user
+      description: Get the current authenticated user's profile
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: '#/components/schemas/User'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/logout:
+    post:
+      summary: Logout user
+      description: Logout the current user (client-side token removal)
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /users:
+    get:
+      summary: Get all users (Admin only)
+      description: Retrieve a paginated list of all users
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        '200':
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          users:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/User'
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users/{id}:
+    get:
+      summary: Get user by ID
+      description: Retrieve a specific user by ID
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      summary: Update user
+      description: Update a user's information
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                email:
+                  type: string
+                  format: email
+                role:
+                  type: string
+                  enum: [admin, employee]
+                baseSalary:
+                  type: number
+                  minimum: 0
+                department:
+                  type: string
+                  minLength: 2
+                  maxLength: 50
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      summary: Delete user (Admin only)
+      description: Soft delete a user (set isActive to false)
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users/stats:
+    get:
+      summary: Get user statistics (Admin only)
+      description: Retrieve user statistics and analytics
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          overall:
+                            type: object
+                            properties:
+                              totalUsers:
+                                type: number
+                              totalAdmins:
+                                type: number
+                              totalEmployees:
+                                type: number
+                              avgBaseSalary:
+                                type: number
+                              totalBaseSalary:
+                                type: number
+                          byDepartment:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                _id:
+                                  type: string
+                                count:
+                                  type: number
+                                avgSalary:
+                                  type: number
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /performance:
+    get:
+      summary: Get performance records
+      description: Retrieve performance records (admin sees all, employee sees own)
+      tags:
+        - Performance
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: startDate
+          in: query
+          description: Start date filter (ISO 8601)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: End date filter (ISO 8601)
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Performance records retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          records:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Performance'
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
+
+    post:
+      summary: Create performance record
+      description: Create a new performance record
+      tags:
+        - Performance
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - taskName
+                - score
+                - difficulty
+              properties:
+                employeeId:
+                  type: string
+                  description: Employee ID (admin only, defaults to current user)
+                taskName:
+                  type: string
+                  minLength: 2
+                  maxLength: 200
+                  example: Frontend Development - User Dashboard
+                score:
+                  type: number
+                  minimum: 0
+                  maximum: 100
+                  example: 85
+                difficulty:
+                  type: string
+                  enum: [easy, medium, hard]
+                  example: medium
+                clientFeedback:
+                  type: string
+                  maxLength: 500
+                  example: Great work on the dashboard design
+                date:
+                  type: string
+                  format: date-time
+                  example: 2025-01-15T10:30:00Z
+                notes:
+                  type: string
+                  maxLength: 1000
+                  example: Completed ahead of schedule
+      responses:
+        '201':
+          description: Performance record created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          record:
+                            $ref: '#/components/schemas/Performance'
+
+  /performance/{id}:
+    get:
+      summary: Get performance record by ID
+      description: Retrieve a specific performance record
+      tags:
+        - Performance
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Performance record retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          record:
+                            $ref: '#/components/schemas/Performance'
+        '404':
+          description: Performance record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      summary: Update performance record
+      description: Update a performance record
+      tags:
+        - Performance
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                taskName:
+                  type: string
+                  minLength: 2
+                  maxLength: 200
+                score:
+                  type: number
+                  minimum: 0
+                  maximum: 100
+                difficulty:
+                  type: string
+                  enum: [easy, medium, hard]
+                clientFeedback:
+                  type: string
+                  maxLength: 500
+                notes:
+                  type: string
+                  maxLength: 1000
+      responses:
+        '200':
+          description: Performance record updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          record:
+                            $ref: '#/components/schemas/Performance'
+
+    delete:
+      summary: Delete performance record
+      description: Delete a performance record
+      tags:
+        - Performance
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Performance record deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /performance/stats:
+    get:
+      summary: Get performance statistics
+      description: Retrieve performance statistics and analytics
+      tags:
+        - Performance
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          description: Start date filter (ISO 8601)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: End date filter (ISO 8601)
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Performance statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          overall:
+                            type: object
+                            properties:
+                              totalRecords:
+                                type: number
+                              avgScore:
+                                type: number
+                              totalScore:
+                                type: number
+                              avgWeightedScore:
+                                type: number
+                              totalWeightedScore:
+                                type: number
+                          byDifficulty:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                _id:
+                                  type: string
+                                count:
+                                  type: number
+                                avgScore:
+                                  type: number
+                          monthly:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                _id:
+                                  type: object
+                                  properties:
+                                    year:
+                                      type: number
+                                    month:
+                                      type: number
+                                count:
+                                  type: number
+                                avgScore:
+                                  type: number
+                                totalScore:
+                                  type: number
+
+  /salary/calculate:
+    post:
+      summary: Calculate salary for all employees (Admin only)
+      description: Calculate salary for all employees based on performance
+      tags:
+        - Salary
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                period:
+                  type: string
+                  pattern: '^\d{4}-\d{2}$'
+                  description: Salary period (YYYY-MM format)
+                  example: 2025-01
+      responses:
+        '201':
+          description: Salary calculated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          period:
+                            type: string
+                          multiplier:
+                            type: number
+                          totalEmployees:
+                            type: number
+                          results:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                employeeId:
+                                  type: string
+                                employeeName:
+                                  type: string
+                                period:
+                                  type: string
+                                totalScore:
+                                  type: number
+                                calculatedSalary:
+                                  type: number
+                                breakdown:
+                                  type: object
+        '400':
+          description: Salary already calculated for this period
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /salary/me:
+    get:
+      summary: Get user's salary history
+      description: Retrieve the current user's salary history
+      tags:
+        - Salary
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        '200':
+          description: Salary history retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          salaryHistory:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/SalaryHistory'
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
+
+  /salary/all:
+    get:
+      summary: Get all salary history (Admin only)
+      description: Retrieve all salary history records
+      tags:
+        - Salary
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: period
+          in: query
+          description: Filter by period (YYYY-MM format)
+          required: false
+          schema:
+            type: string
+            pattern: '^\d{4}-\d{2}$'
+        - name: employeeId
+          in: query
+          description: Filter by employee ID
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Salary history retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          salaryHistory:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/SalaryHistory'
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /salary/stats:
+    get:
+      summary: Get salary statistics (Admin only)
+      description: Retrieve salary statistics and analytics
+      tags:
+        - Salary
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Salary statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          overall:
+                            type: object
+                            properties:
+                              totalSalaries:
+                                type: number
+                              totalAmount:
+                                type: number
+                              avgSalary:
+                                type: number
+                              avgBaseSalary:
+                                type: number
+                              avgPerformanceBonus:
+                                type: number
+                          currentMonth:
+                            type: object
+                            properties:
+                              count:
+                                type: number
+                              totalAmount:
+                                type: number
+                              avgSalary:
+                                type: number
+                          monthly:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                _id:
+                                  type: string
+                                count:
+                                  type: number
+                                totalAmount:
+                                  type: number
+                                avgSalary:
+                                  type: number
+                          topEmployees:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                _id:
+                                  type: string
+                                employeeName:
+                                  type: string
+                                totalSalaries:
+                                  type: number
+                                avgSalary:
+                                  type: number
+                                totalEarned:
+                                  type: number
+                                lastSalary:
+                                  type: number
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /salary/breakdown/{period}:
+    get:
+      summary: Get salary breakdown for period
+      description: Retrieve detailed salary breakdown for a specific period
+      tags:
+        - Salary
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: period
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-\d{2}$'
+            example: 2025-01
+      responses:
+        '200':
+          description: Salary breakdown retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          period:
+                            type: string
+                          salaryHistory:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/SalaryHistory'
+        '404':
+          description: No salary records found for this period
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /settings:
+    get:
+      summary: Get current settings (Admin only)
+      description: Retrieve current application settings
+      tags:
+        - Settings
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Settings retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          settings:
+                            $ref: '#/components/schemas/Settings'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      summary: Update settings (Admin only)
+      description: Update application settings
+      tags:
+        - Settings
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                salaryMultiplier:
+                  type: number
+                  minimum: 0
+                  example: 100
+      responses:
+        '200':
+          description: Settings updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          settings:
+                            $ref: '#/components/schemas/Settings'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /settings/reset:
+    post:
+      summary: Reset settings to defaults (Admin only)
+      description: Reset all settings to their default values
+      tags:
+        - Settings
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Settings reset successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          settings:
+                            $ref: '#/components/schemas/Settings'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /settings/stats:
+    get:
+      summary: Get system statistics (Admin only)
+      description: Retrieve comprehensive system statistics
+      tags:
+        - Settings
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: System statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          settings:
+                            type: object
+                            properties:
+                              totalEmployees:
+                                type: number
+                              totalPerformanceRecords:
+                                type: number
+                              totalSalariesGenerated:
+                                type: number
+                              lastUpdated:
+                                type: string
+                                format: date-time
+                          additional:
+                            type: object
+                            properties:
+                              totalUsers:
+                                type: number
+                              totalPerformanceRecords:
+                                type: number
+                              totalSalariesGenerated:
+                                type: number
+                              recentPerformance:
+                                type: array
+                                items:
+                                  $ref: '#/components/schemas/Performance'
+                              departmentStats:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    _id:
+                                      type: string
+                                    count:
+                                      type: number
+                                    avgSalary:
+                                      type: number
+                              performanceStats:
+                                type: object
+                                properties:
+                                  totalRecords:
+                                    type: number
+                                  avgScore:
+                                    type: number
+                                  totalScore:
+                                    type: number
+                              salaryStats:
+                                type: object
+                                properties:
+                                  totalSalaries:
+                                    type: number
+                                  totalAmount:
+                                    type: number
+                                  avgSalary:
+                                    type: number
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /settings/health:
+    get:
+      summary: Get system health status (Admin only)
+      description: Check the health status of the system
+      tags:
+        - Settings
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: System is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: healthy
+                      timestamp:
+                        type: string
+                        format: date-time
+                      checks:
+                        type: object
+                        properties:
+                          database:
+                            type: string
+                            example: connected
+                          settings:
+                            type: string
+                            example: available
+                          collections:
+                            type: string
+                            example: accessible
+                      settings:
+                        type: object
+                        properties:
+                          salaryMultiplier:
+                            type: number
+                          lastSalaryCalculation:
+                            type: string
+                            format: date-time
+                            nullable: true
+                      collections:
+                        type: object
+                        properties:
+                          users:
+                            type: number
+                          performance:
+                            type: number
+                          salaryHistory:
+                            type: number
+        '503':
+          description: System is unhealthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: unhealthy
+                      timestamp:
+                        type: string
+                        format: date-time
+                      checks:
+                        type: object
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+tags:
+  - name: Authentication
+    description: User authentication and authorization
+  - name: Users
+    description: User management operations
+  - name: Performance
+    description: Performance tracking and management
+  - name: Salary
+    description: Salary calculation and history
+  - name: Settings
+    description: System settings and administration
+  - name: System
+    description: System health and status 
