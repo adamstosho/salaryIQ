@@ -45,13 +45,13 @@ const calculateSalary = async (req, res) => {
 
       console.log(`Employee ${employee.name}: Total weighted score: ${totalScore}`);
 
-      const performanceBonus = totalScore * multiplier;
-      const calculatedSalary = employee.baseSalary + performanceBonus;
+      const performanceBonus = Math.round(totalScore * multiplier);
+      const calculatedSalary = Math.round(employee.baseSalary + performanceBonus);
 
       console.log(`Employee ${employee.name}: Base salary: ${employee.baseSalary}, Bonus: ${performanceBonus}, Total: ${calculatedSalary}`);
 
       const breakdown = {
-        baseSalary: employee.baseSalary,
+        baseSalary: Math.round(employee.baseSalary),
         performanceBonus: performanceBonus,
         totalSalary: calculatedSalary
       };

@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { TrendingUp, Users, DollarSign } from "lucide-react"
+import { TrendingUp, Users } from "lucide-react"
 
 const features = [
   {
@@ -33,7 +33,7 @@ const features = [
     id: "salary",
     title: "Salary Automation",
     description: "Intelligent salary calculation based on performance metrics",
-    icon: DollarSign,
+    icon: TrendingUp,
     color: "text-accent",
     bgColor: "bg-accent/10",
     details: ["Automated calculations", "Performance bonuses", "Salary history tracking", "Detailed breakdowns"],

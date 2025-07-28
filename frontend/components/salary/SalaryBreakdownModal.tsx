@@ -47,8 +47,10 @@ export function SalaryBreakdownModal({ open, onOpenChange, salaryRecord }: Salar
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "USD",
-    }).format(amount)
+      currency: "NGN",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+    }).format(Math.round(amount))
   }
 
   const getStatusColor = (status: string) => {
@@ -71,7 +73,7 @@ export function SalaryBreakdownModal({ open, onOpenChange, salaryRecord }: Salar
       <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center">
-            <DollarSign className="w-5 h-5 mr-2" />
+            <span className="w-5 h-5 mr-2 text-center" style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>₦</span>
             Salary Breakdown - {salaryRecord.period}
           </DialogTitle>
         </DialogHeader>
@@ -116,7 +118,7 @@ export function SalaryBreakdownModal({ open, onOpenChange, salaryRecord }: Salar
             <Card className="bg-slate-700 border-slate-600">
               <CardHeader>
                 <CardTitle className="text-white flex items-center">
-                  <DollarSign className="w-5 h-5 mr-2" />
+                  <span className="w-5 h-5 mr-2 text-center" style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>₦</span>
                   Salary Calculation
                 </CardTitle>
               </CardHeader>

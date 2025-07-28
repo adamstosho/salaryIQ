@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge"
 import {
   TrendingUp,
   Users,
-  DollarSign,
   BarChart3,
   Shield,
   Zap,
@@ -46,7 +45,7 @@ export default function LandingPage() {
       bgColor: "bg-primary/10",
     },
     {
-      icon: DollarSign,
+      icon: TrendingUp,
       title: "Automated Salary Calculation",
       description: "Smart algorithms calculate fair compensation based on performance",
       color: "text-secondary",
@@ -75,7 +74,7 @@ export default function LandingPage() {
       features: ["Task scoring", "Difficulty weighting", "Client feedback", "Approval workflows"],
     },
     {
-      icon: DollarSign,
+      icon: TrendingUp,
       title: "Salary Management",
       description: "Automated salary calculation based on performance metrics",
       features: ["Performance bonuses", "Salary history", "Breakdown analysis", "Export reports"],

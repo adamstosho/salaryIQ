@@ -43,16 +43,16 @@ async function calculateSalaryForUser() {
     const settings = await Settings.getInstance();
     const multiplier = settings.salaryMultiplier;
 
-    const performanceBonus = totalScore * multiplier;
-    const calculatedSalary = user.baseSalary + performanceBonus;
+    const performanceBonus = Math.round(totalScore * multiplier);
+    const calculatedSalary = Math.round(user.baseSalary + performanceBonus);
 
     console.log(`\nSalary calculation:`);
-    console.log(`  Base salary: $${user.baseSalary}`);
-    console.log(`  Performance bonus: $${performanceBonus}`);
-    console.log(`  Total salary: $${calculatedSalary}`);
+          console.log(`  Base salary: ₦${user.baseSalary}`);
+      console.log(`  Performance bonus: ₦${performanceBonus}`);
+      console.log(`  Total salary: ₦${calculatedSalary}`);
 
     const breakdown = {
-      baseSalary: user.baseSalary,
+      baseSalary: Math.round(user.baseSalary),
       performanceBonus: performanceBonus,
       totalSalary: calculatedSalary
     };
@@ -65,7 +65,7 @@ async function calculateSalaryForUser() {
     if (existingSalary) {
       console.log(`\n⚠️ Salary record already exists for ${period}`);
       console.log(`  Current total score: ${existingSalary.totalScore}`);
-      console.log(`  Current calculated salary: $${existingSalary.calculatedSalary}`);
+      console.log(`  Current calculated salary: ₦${existingSalary.calculatedSalary}`);
       
       existingSalary.totalScore = totalScore;
       existingSalary.calculatedSalary = calculatedSalary;

@@ -8,8 +8,13 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/contexts/AuthContext"
 import { apiClient } from "@/lib/api"
-import { Users, TrendingUp, DollarSign, Activity, Plus, Eye, Calendar, Award } from "lucide-react"
+import { Users, TrendingUp, Activity, Plus, Eye, Calendar, Award } from "lucide-react"
 import { format } from "date-fns"
+
+// Naira icon component
+const NairaIcon = ({ className, ...props }: any) => (
+  <span className={className} style={{ fontFamily: 'monospace', fontWeight: 'bold' }} {...props}>₦</span>
+)
 
 export default function DashboardPage() {
   const { user, isAdmin, authLoading } = useAuth()
@@ -74,10 +79,12 @@ export default function DashboardPage() {
   }
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-NG", {
       style: "currency",
-      currency: "USD",
-    }).format(amount)
+      currency: "NGN",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(Math.round(amount))
   }
 
   if (authLoading || loading) {
@@ -122,7 +129,7 @@ export default function DashboardPage() {
               <StatsCard
                 title="Salaries Generated"
                 value={stats?.totalSalariesGenerated || 0}
-                icon={DollarSign}
+                icon={Activity}
                 change={{ value: "+15% from last month", type: "increase" }}
               />
               <StatsCard
@@ -149,7 +156,7 @@ export default function DashboardPage() {
               <StatsCard
                 title="Current Salary"
                 value={formatCurrency(stats?.currentSalary || 0)}
-                icon={DollarSign}
+                icon={Activity}
                 change={{ value: "+12% from last month", type: "increase" }}
               />
               <StatsCard
@@ -227,7 +234,7 @@ export default function DashboardPage() {
                       className="justify-start h-12 bg-secondary/10 hover:bg-secondary/20 text-secondary border border-secondary/20"
                       onClick={() => window.location.href = '/salary'}
                     >
-                      <DollarSign className="w-4 h-4 mr-2" />
+                      <span className="w-4 h-4 mr-2 text-center" style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>₦</span>
                       Calculate Salaries
                     </Button>
                     <Button 

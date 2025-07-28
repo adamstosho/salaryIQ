@@ -59,8 +59,10 @@ export function SalaryStatusModal({ open, onOpenChange, salaryRecord, onSuccess 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "USD",
-    }).format(amount)
+      currency: "NGN",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+    }).format(Math.round(amount))
   }
 
   const getStatusIcon = (status: string) => {
@@ -68,7 +70,7 @@ export function SalaryStatusModal({ open, onOpenChange, salaryRecord, onSuccess 
       case "approved":
         return <CheckCircle className="w-4 h-4 text-green-500" />
       case "paid":
-        return <DollarSign className="w-4 h-4 text-blue-500" />
+        return <span className="w-4 h-4 text-blue-500 text-center" style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>₦</span>
       case "pending":
         return <Clock className="w-4 h-4 text-yellow-500" />
       default:
@@ -137,7 +139,7 @@ export function SalaryStatusModal({ open, onOpenChange, salaryRecord, onSuccess 
                   </SelectItem>
                   <SelectItem value="paid">
                     <div className="flex items-center space-x-2">
-                      <DollarSign className="w-4 h-4 text-blue-500" />
+                      <span className="w-4 h-4 text-blue-500 text-center" style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>₦</span>
                       <span>Paid</span>
                     </div>
                   </SelectItem>

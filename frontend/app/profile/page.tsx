@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useAuth } from "@/contexts/AuthContext"
 import { apiClient } from "@/lib/api"
 import { useToast } from "@/hooks/use-toast"
-import { User, Mail, Building, DollarSign, Calendar, Edit, Save, X } from "lucide-react"
+import { User, Mail, Building, Calendar, Edit, Save, X } from "lucide-react"
 import { format } from "date-fns"
 
 export default function ProfilePage() {
@@ -80,10 +80,12 @@ export default function ProfilePage() {
   }
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-NG", {
       style: "currency",
-      currency: "USD",
-    }).format(amount)
+      currency: "NGN",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(Math.round(amount))
   }
 
   const formatDate = (dateString: string | null | undefined) => {
@@ -236,7 +238,7 @@ export default function ProfilePage() {
           <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
               <CardTitle className="text-white flex items-center">
-                <DollarSign className="w-5 h-5 mr-2" />
+                <span className="w-5 h-5 mr-2 text-center" style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>₦</span>
                 Employment Details
               </CardTitle>
               <CardDescription className="text-slate-400">
@@ -260,7 +262,7 @@ export default function ProfilePage() {
                   />
                 ) : (
                   <div className="flex items-center text-white">
-                    <DollarSign className="w-4 h-4 mr-2 text-slate-400" />
+                    <span className="w-4 h-4 mr-2 text-slate-400 text-center" style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>₦</span>
                     {formatCurrency(user.baseSalary)}
                   </div>
                 )}

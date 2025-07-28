@@ -87,8 +87,10 @@ export default function UsersPage() {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "USD",
-    }).format(amount)
+      currency: "NGN",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+    }).format(Math.round(amount))
   }
 
   const getRoleColor = (role: string) => {

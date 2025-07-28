@@ -16,7 +16,7 @@ async function debugSalaryCalculation() {
       return;
     }
     console.log(`✅ Found user: ${user.name} (${user.email})`);
-    console.log(`Base salary: $${user.baseSalary}`);
+    console.log(`Base salary: ₦${user.baseSalary}`);
 
     const allRecords = await Performance.find({ employeeId: user._id }).populate('employeeId', 'name email');
     console.log(`\n📊 Total performance records: ${allRecords.length}`);
@@ -80,9 +80,9 @@ async function debugSalaryCalculation() {
     const calculatedSalary = user.baseSalary + performanceBonus;
     
     console.log(`\n💵 Salary calculation:`);
-    console.log(`  Base salary: $${user.baseSalary}`);
-    console.log(`  Performance bonus: $${performanceBonus}`);
-    console.log(`  Total salary: $${calculatedSalary}`);
+          console.log(`  Base salary: ₦${user.baseSalary}`);
+      console.log(`  Performance bonus: ₦${performanceBonus}`);
+      console.log(`  Total salary: ₦${calculatedSalary}`);
 
     const period = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
     const existingSalary = await SalaryHistory.findOne({
@@ -93,7 +93,7 @@ async function debugSalaryCalculation() {
     if (existingSalary) {
       console.log(`\n📋 Existing salary record for ${period}:`);
       console.log(`  Total score: ${existingSalary.totalScore}`);
-      console.log(`  Calculated salary: $${existingSalary.calculatedSalary}`);
+      console.log(`  Calculated salary: ₦${existingSalary.calculatedSalary}`);
       console.log(`  Status: ${existingSalary.status}`);
     } else {
       console.log(`\n❌ No salary record found for ${period}`);

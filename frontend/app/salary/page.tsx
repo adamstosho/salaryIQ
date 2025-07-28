@@ -145,10 +145,12 @@ export default function SalaryPage() {
   }
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-NG", {
       style: "currency",
-      currency: "USD",
-    }).format(amount)
+      currency: "NGN",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(Math.round(amount))
   }
 
   const getStatusColor = (status: string) => {
@@ -169,7 +171,7 @@ export default function SalaryPage() {
       case "approved":
         return <CheckCircle className="w-4 h-4" />
       case "paid":
-        return <DollarSign className="w-4 h-4" />
+        return <span className="w-4 h-4 text-center" style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>₦</span>
       case "pending":
         return <Clock className="w-4 h-4" />
       default:

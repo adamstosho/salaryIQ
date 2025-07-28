@@ -7,7 +7,6 @@ import {
   LayoutDashboard,
   Users,
   TrendingUp,
-  DollarSign,
   Settings,
   LogOut,
   ChevronLeft,
@@ -57,7 +56,7 @@ export function Sidebar({ collapsed, onToggle, onMobileClose }: SidebarProps) {
     {
       name: "Salary",
       href: "/salary",
-      icon: DollarSign,
+      icon: TrendingUp,
       current: pathname.startsWith("/salary"),
     },
     {
