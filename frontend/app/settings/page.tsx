@@ -39,7 +39,7 @@ export default function SettingsPage() {
   const loadSettings = async () => {
     try {
       setLoading(true)
-      const response = await apiClient.getSettings()
+      const response = await apiClient.getSettings() as any
       setSettings(response.data.settings)
       setSalaryMultiplier(response.data.settings.salaryMultiplier.toString())
     } catch (error) {
@@ -56,7 +56,7 @@ export default function SettingsPage() {
 
   const loadAutomationSettings = async () => {
     try {
-      const response = await apiClient.getAutomationSettings()
+      const response = await apiClient.getAutomationSettings() as any
       setAutomationSettings(response.data)
       setAutomatedSalaryCalculation(response.data.automatedSalaryCalculation)
       setSalaryCalculationDay(response.data.salaryCalculationDay.toString())
@@ -67,7 +67,7 @@ export default function SettingsPage() {
 
   const loadSystemHealth = async () => {
     try {
-      const response = await apiClient.getSystemHealth()
+      const response = await apiClient.getSystemHealth() as any
       setSystemHealth(response.data)
     } catch (error) {
       console.error("Error loading system health:", error)

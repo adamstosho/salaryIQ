@@ -33,7 +33,7 @@ export default function DashboardPage() {
           apiClient.getUserStats(),
           apiClient.getPerformanceStats(),
           apiClient.getSalaryStats(),
-        ])
+        ]) as any[]
 
         setStats({
           totalEmployees: userStats.data.overall.totalUsers,
@@ -46,7 +46,7 @@ export default function DashboardPage() {
         const [performanceRecords, salaryHistory] = await Promise.all([
           apiClient.getPerformanceRecords({ limit: 5 }),
           apiClient.getMySalaryHistory(1, 5),
-        ])
+        ]) as any[]
 
         const avgScore =
           performanceRecords.data.records.reduce((acc: number, record: any) => acc + record.score, 0) /
